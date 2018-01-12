@@ -12,18 +12,19 @@ const ORIGINAL_PATH = process.env.ORIGINAL_PATH;
 
 const IMAGE_SIZES = {
   'medium': [180, 240],
-  'large': [450, 600]
+  'large': [450, 600],
+  'default': [768, 1024]
 };
 
 exports.handler = function(event, context, callback) {
   const key = event.queryStringParameters.key;
-  const match = key.match(/images\/(.*)_([^_]+).jpg/);
+  const match = key.match(/images\/((.*)_([^_]+)|[^_]+).jpg/);
   //const match = key.match(/(\d+)x(\d+)\/(.*)/);
   //const width = parseInt(match[1], 10);
   //const height = parseInt(match[2], 10);
   //const originalKey = match[3];
-  const baseKey  = match[1];
-  const modifier = match[2];
+  const baseKey  = match[2] || match[1];
+  const modifier = match[3] || 'default';
   const width  = IMAGE_SIZES[modifier][0];
   const height = IMAGE_SIZES[modifier][1];
 
