@@ -7,6 +7,7 @@ const S3 = new AWS.S3({
 const Sharp = require('sharp');
 
 const BUCKET = process.env.BUCKET;
+const TEST_URL = process.env.TEST_URL;
 const URL = process.env.URL;
 const ORIGINAL_PATH = process.env.ORIGINAL_PATH;
 
@@ -17,6 +18,7 @@ const IMAGE_SIZES = {
 };
 
 exports.handler = function(event, context, callback) {
+  const test = event.queryStringParameters.test;
   const key = event.queryStringParameters.key;
   const match = key.match(/images\/((.*)_([^_]+)|[^_]+).jpg/);
   //const match = key.match(/(\d+)x(\d+)\/(.*)/);
@@ -44,7 +46,7 @@ exports.handler = function(event, context, callback) {
     )
     .then(() => callback(null, {
         statusCode: '301',
-        headers: {'location': `${URL}/${key}?resized=true`},
+        headers: {'location': test ? `${TEST_URL}/${key}` : `${URL}/${key}?resized=true`},
         body: '',
       })
     )
