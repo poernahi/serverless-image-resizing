@@ -18,11 +18,25 @@ const IMAGE_SIZES = {
 };
 
 exports.handler = function(event, context, callback) {
-  const test = event.queryStringParameters.test;
-  const key = event.queryStringParameters.key;
-  const match = key.match(/images\/((.*)_([^_]+)|[^_]+).jpg/);
-  const baseKey  = match[2] || match[1];
-  const modifier = match[3] || 'default';
+  let test = false;
+  let modifier = 'default';
+  let key;
+  let baseKey;
+
+  if (event.queryStringParameters) {
+    test = event.queryStringParameters.test;
+    key = event.queryStringParameters.key;
+    const match = key.match(/images\/((.*)_([^_]+)|[^_]+)\.jpg/);
+    key = match[0];
+    baseKey  = match[2] || match[1];
+    modifier = match[3] || modifier;
+  } else {
+    key = event.Records && event.Records[0].s3.object.key;
+    const match = key.match(/original\/(.+)\.jpg/);
+    baseKey = match[1];
+    key = `images/${baseKey}.jpg`;
+  }
+
   const width  = IMAGE_SIZES[modifier][0];
   const height = IMAGE_SIZES[modifier][1];
 
